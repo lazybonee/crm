@@ -1,0 +1,1515 @@
+=FORMAT: 1A
+HOST: http://polls.apiblueprint.org/
+
+# bookshop
+
+Polls is a simple API allowing consumers to view polls and vote in them.
+
+##  通用接口参数
+如果没有特殊说明，接口request和response都采用json格式
+
+request接口都必须带上如下参数： request接口以/data开头
+ 
++ Request (application/json)
+
+        {
+            "userId": 1243324,
+            "userName": "张三",
+            "shopIdList[]": [1],
+            "token": "1234124231",        //MD5(tokenBaseKey+signTime)
+            "signTime": 234235423         //提交时间戳，自1970年1月1日至今经过的秒数秒数秒数
+        }
+        
+
++ Response 200 (application/json)
+
+        {
+            "isOk": true,                 //true代表成功 false表示失败
+            "code": 200,                  //调用返回码
+            "message": "Success"          //调用返回信息
+        }
+
+如果需要分页，request接口都必须带上如下参数: request接口以/data开头
+        {
+            "queryList[pageNum]":1,
+            "queryList[pageSize]":10
+        }
+返回数据 增加一个对象 格式如下：
+        { 
+            ,   
+            "paginator":{
+                "currentPage":,
+                "maxEntries":,
+                "totalPage":4
+            }
+        }
+        
+改变当前店铺 /shop/shopChange [GET]
+    data: {
+        "id": 1   //需要切换的店铺id
+    }   
+   
+改变当前公司 /company/companyChange [GET]
+    data: {
+        "id": 1   //需要切换的公司id
+    }
+    
+获取当前登录状态
++ Response 200 (application/json)
+
+        {
+            "getLogin":{
+                "loginStatus": 1,   //当前登录状态，0为未登录，1为已登录，其他值视为未授权
+                "userId": "1",
+                "userToken": "dgdsfgasd",
+                "userName": "潘杉666",
+                "shopId": 1,
+                "companyId": 3,
+                "company[]":[
+                    "companyId": "3",
+                    "companyName": "商务印刷馆1",
+                    "shop[]": [
+                        {
+                            "shopId": "1",
+                            "shopName": "商务印刷馆1店铺1"
+                        }
+                    ]
+                ],
+                "auth[]": [
+                    {
+                        "controlIndex": "dashboard",
+                        "secondAuth": {
+                            "dashboard": 1
+                        }
+                    },
+                    {
+                        "controlIndex": "customerAnalysis",
+                        "secondAuth": {
+                            "rfmAnalysis": 1,
+                            "customStructureAnalysis": 3,
+                            "productAnalysis": 3,
+                            "salesAnalysis": 3,
+                            "crowdManagement": 3
+                        }
+                    },
+                    {
+                        "controlIndex": "activityManagement",
+                        "secondAuth": {
+                            "activityPlanManagement": 1,
+                            "activityReportAnalysis": 3
+                        }
+                    },
+                    {
+                        "controlIndex": "managementBackend",
+                        "secondAuth": {
+                            "userManagement": 3,
+                            "departmentManagement": 3,
+                            "roleManagement": 3,
+                            "shopManagement": 3
+                        }
+                    }
+                ]
+            }
+        }
+
+##  客户洞察模块
+
+###   RFM模型分析  
+
+####  R值分析 /rfm/rAnalysisList  [GET]
+
++ Request (application/json)
+
+        {
+            "endTime":"2016-06-19",       //分析截止时间
+            "durTime": 365,               //分析周期
+            "shopIdList": [               //参与分析店铺id列表
+                1234234,
+                1231233,
+                1233244,
+                1232344
+            ],
+            "rValue": 10,                 //r值
+            "targetSelected": 'F'            //是否进行m分析
+        }
+
++ Response 200 (application/json)  结合页面商榷返回
+
+            {
+                "rAnalysisList": [{
+                    "duringTime": "10-20天",
+                    "customNum": 222,                //参与分析客户数量
+                    "customRate": 1.09%,             //参与分析客户占比
+                    "accuCustomRate": 7.01%,         //参与分析客户累计占比
+                    "f1": 11.1%,                     //f分析的值;若无f分析，则此处为空
+                    "f2": 22.2%,                     //f分析的值;若无f分析，则此处为空
+                    "f3": 11.1%,                     //f分析的值;若无f分析，则此处为空
+                    "f4": 22.2%,                     //f分析的值;若无f分析，则此处为空
+                    "f5tobig": 33.4%,                //f分析的值;若无f分析，则此处为空
+                    "pricePerCustom":"",
+                    "boughtTimes":"",
+                    "accumulateMoney":""
+                },{
+                }
+                             ]
+            }
+
+####  F值分析 /rfm/fAnalysisList  [GET]
+
++ Request (application/json)
+
+        {
+            "endTime": "2016-06-19",              //分析截止时间
+            "durTime": 365,                       //分析周期
+            "shopIdList": [                       //参与分析店铺id列表
+                123444,
+                124312,
+                214123,
+                123412
+            ],
+           "targetSelected": 'F'                    //是否进行m分析
+        }
+
++ Response 200 (application/json)  结合页面商榷返回格式 
+
+            {
+                "rAnalysisList": [{
+                    "frequency": "1次",
+                    "customNum": 222,                        //参与分析客户数量
+                    "customRate": 1.09%,                     //参与分析客户占比
+                    "accuCustomRate": 7.01%,                 //参与分析客户累计占比
+                    "r1": 11.1%,                             //r分析的值;若无r分析，则此处为空
+                    "r2": 22.2%,                             //r分析的值;若无r分析，则此处为空
+                    "r3": 11.1%,                             //r分析的值;若无r分析，则此处为空
+                    "r4": 22.2%,                             //r分析的值;若无r分析，则此处为空
+                    "r5tobig": 33.4%,                        //r分析的值;若无r分析，则此处为空
+                    "pricePerCustom":"",
+                    "boughtTimes":"",
+                    "accumulateMoney":""                  //m分析的值;若无m分析，则此处为空
+                },{
+                }
+                             ]
+            }
+            
+####   M值分析 /rfm/mAnalysisList [GET]
+
++ Request (application/json)
+
+        {
+            "endTime": "2016-06-19",                //说明同上
+            "durTime": 365, 
+            "shopIdList": [
+                1232134,
+                2143433,
+                1243244,
+                2132343
+            ],
+            "mValue": 10,
+            "targetSelected": 'F'   
+        }
+
++ Response 200 (application/json)  结合页面商榷返回格式 
+
+            {
+                "mAnalysisList": [{
+                    "duringMoney": "20元以下 ",
+                    "customNum": 222,
+                    "customRate": 1.09%,
+                    "accuCustomRate": 7.01%,
+                    "f1": 11.1%,
+                    "f2": 22.2%,
+                    "f3": 11.1%,
+                    "f4": 22.2%,
+                    "f5tobig": 33.4%,
+                    "r1": 11.1%,
+                    "r2": 22.2%,
+                    "r3": 11.1%,
+                    "r4": 22.2%,
+                    "r5tobig": 33.4%,
+                },{
+                }
+                             ]
+            }
+            
+            
+####  获取RFM模型接口 /rfm/rfmModel  [GET]
+
++ Request (application/json)
+
+        {
+            "endTime": "2016-06-19",
+            "durTime": 365, 
+            "shopIdList": [
+                2134324,
+                2134324,
+                2132433,
+                1243433
+            ],
+            "customRate": true,             //分析条件，客户数/占比
+            "averageAmount": false,         //分析条件，平均每次购买金额
+            "totalAmount":  false           //累计购买此金额
+            
+        }
+
++ Response 200 (application/json)
+
+            {
+                "rfmModel": [[1,1,1,2],    //返回二维数组，每个元素分别表示不同f和r值情况下的分析结果
+                             [2,3,3,3],
+                             [3,3,3,4]
+                             ],
+                "peopleNumber": 1000       //参与分析的总人数
+            }
+            
+###  客户结构分析   /rfm/custStruct
+
+#### 获取全体客户分析截至截止时间信息 /all/endTime
+
++ Request (application/json)
+
+        {
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "endTime":[
+                "2016-09-09",
+                "2016-08-09",
+                "2016-07-09"
+                ]
+        }
+
+#### 全体客户 /rfm/allCustStruct
++ Request (application/json)
+
+        {
+            "endTime": "2016-06-19",
+            "shopIdList": [
+                2134324,
+                2134324,
+                2132433,
+                1243433
+            ],
+            "rValue": 90
+        }
+
++ Response 200 (application/json)
+全体客户 key = 1，
+累计成交客户 key = 2， 
+潜在客户 key = 3，
+R<r  key = 4，
+r<=R<2r  key = 5，
+2r<=R<4r   key = 6，
+R>=4r   key = 7，
+新客户（r天之前没有买过，r天之内买过）key = 8，
+老客户（r天之前买过）key = 9,
+月/半年/季/年度（取决于r值30，90，180，360）保持用户（前r天到2r天买过，r天内没买过）key = 10,
+月/半年/季/年度（取决于r值30，90，180，360）唤醒用户（前2r天到4r天买过，2r之类没有买过）key = 11,
+月/半年/季/年度（取决于r值30，90，180，360）激活用户（4r天前买过）key = 12
+            {
+                "totalCustomer": 1900      //参与分析总人数
+                "rAnalysis": [             //分别对不同r值的情况进行分析，至少两大类  r=0，r>365,其他按照rVaule进行划分
+                    {
+                        "rNumber": 209,
+                        "rRate": 0.97%,
+                        "key": 1,
+                        "label":"全体客户 ",
+                        "customTend":[200,58,16,89], // 客户数 
+                        "description": "解释"
+                    },
+                    {
+                        "rNumber": 16,
+                        "rRate": 0.08%,
+                        "key": 2,
+                        "parent": 1,
+                        "label":" 累计成交客户 ",
+                        "customTend":[200,58,16,89], // 客户数 
+                        "description": "解释"
+                    }
+                    ...
+                ]
+            }
+
+#### 获取活跃客户分析截至截止时间信息 /active/endTime
+
++ Request (application/json)
+
+        {
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "endTime":[
+                "2016-09-09",
+                "2016-08-09",
+                "2016-07-09"
+                ]
+        }
+
+####活跃客户  /rfm/activeCustStruct
++ Request (application/json)
+
+        {
+            "endTime": "2016-06-19",
+            "shopIdList": [
+                2134324,
+                2134324,
+                2132433,
+                1243433
+            ],
+            "rValue": 90
+        }
+
++ Response 200 (application/json)
+全体客户 key = 1，
+新客户（r天之前没有买过，r天之内买过）key = 2，
+老客户（r天之前买过）key = 3,
+购买一次 key = 4,
+购买多次 key = 5,
+月/半年/季/年度（取决于r值30，90，180，360）保持用户（前r天到2r天买过，r天内没买过）key = 6,
+月/半年/季/年度（取决于r值30，90，180，360）唤醒用户（前2r天到4r天买过，2r之类没有买过）key = 7,
+月/半年/季/年度（取决于r值30，90，180，360）激活用户（4r天前买过）key = 8
+            {
+                "totalCustomer": 1900      //参与分析总人数
+                "rAnalysis": [             //分别对不同r值的情况进行分析，至少两大类  r=0，r>365,其他按照rVaule进行划分
+                    {
+                        "rNumber": 209, //客户数
+                        "rRate": 7.97%, //客户保持率，客户唤醒率，重复购买率等各种
+                        "key": 1,
+                        "parent": 0,
+                        "dealAmount": 100 ,// 成交额 
+                        "aveDealAmount": 1000 ,//人均成交额 
+                        "repeatCustNum": 22 ,//重复购买人数 
+                        "repeatDealAmount": 2222.98,//重复购买金额  
+                        "repeatRate": 20%,
+                        "customTend":[200,58,16,89], // 客户数
+                        "description": "解释",
+                        "label":"活跃客户"
+                    },
+                    {
+                        
+                        "rNumber": 109, //客户数
+                        "rRate": 0.97%, //客户保持率，客户唤醒率，重复购买率等各种
+                        "key": 1,
+                        "dealAmount": 100 ,// 成交额 
+                        "aveDealAmount": 1000 ,//人均成交额 
+                        "repeatCustNum": 22 ,//重复购买人数 
+                        "repeatDealAmount": 2222.98//重复购买金额  
+                        "parent": 1,
+                        "repeatRate": 20%,
+                        "customTend":[200,58,16,89], // 客户数 
+                        "description": "解释",
+                        "label":"新客户"
+                    }
+                    ...
+                ]
+            }
+            
+            
+
+####会员客户  /rfm/memberLevel   [GET]
+
++ Request (application/json)
+
+        {
+            "endTime": "2016-06-19",
+            "shopIdList": [
+                2134324,
+                2134324,
+                2132433,
+                1243433
+            ],
+            "rValue": 90
+        }
+
++ Response 200 (application/json)
+memberLevel 1-3 为会员等级，memberLevel 0 为总计
+
+            {
+                "member":[
+                    {
+                        "memberLevel": 1,                   //会员等级
+                        "memberNum": 284,                   //会员人数
+                        "activeMemberNum": 222,             //活跃会员人数
+                        "activeOrderNum": 45,               //活跃会员订单数
+                        "activeOrderAmount": 123            //活跃会员消费金额
+                        "activeAveAmount": 80.3,            //活跃会员人均累计成交
+                        "activeAveNum": 2,                  //活跃会员人均购买次数
+                        "activeAveGoodsNum": 2              //活跃会员人均每次成交
+                        "memberOrderNum": 432,              //会员总订单数
+                        "memberOrderAmount": 9458.6,        //会员总消费金额
+                        "aveAmount": 80.3,                  //人均累计成交
+                        "aveNum": 2,                        //人均购买次数
+                        "aveGoodsNum": 2                    //人均每次成交
+                    },
+                    {},
+                    {}
+                ]
+            }
+
+##  商品分析
+
+###  获取商品销售连带 /product/saleJoint  [GET]
+
++ Request (application/json)
+
+        {
+            "smallSaleJointRate": 16.6,          //最小连带购买率（连带购买率取值范围）
+            "bigSaleJointRate": 20.1,            //最大连带购买率（连带购买率取值范围）
+            "smallRecommendablePeople": 190,     //最小可推荐人数
+            "bigRecommendablePeople": 223,       //最大可推荐人数
+            "smallSuccessPeople" : 1,            //最小预计成功数
+            "bigSuccessPeople": 3,               //最大预计成功数
+            "productA": "目送",                     //商品名称或关键字
+            "productB": "一句顶一万句",             
+            "typeA": "文学",                     //商品类目
+            "typeB": "小说",
+            "shopIdList": [
+                213424,
+                123424,
+                214234,
+                123234
+            ],
+            "recency": 7,                        //使用最近7的数据进行分析
+            "pageNum": 1                         //当前页数
+        }
+
++ Response 200 (application/json)
+
+            {
+                "saleJoint": [{
+                    "productAName": "目送",
+                    "buyerA": 199,
+                    "productBName": "一句顶一万句", 
+                    "buyerB": 221,
+                    "collocationCorrelation": "?不知道这个字段有没有必要",       //搭配关联
+                    "salesJointRate": 0.46%,                                     //购买连带率
+                    "recommendablePeople": 215,                                  //可推荐人数
+                    "successPeolple": 2,                                         //预计可成功人士
+                    "totalPage":                                                 //分页总页数
+                    "customerList": [{                                           //可推荐客户列表
+                        "customerId": 213,                                       //数组元素为customer实体
+                        "customerPhone": 123214,                                 
+                        "customerEmail": "123@qq.com"
+                        },{
+                        }
+                    ]
+                    
+                },
+                {}]
+            }
+            
+###  导出推荐规则列表  /product/recommendRule [GET]
+
++ Response 200 (application/json)
+
+        {
+            
+        }
+        
+###  选中客户名单下载/exportCustomList    [GET]
+
++ Response 200 (application/json)
+
+        {
+        }
+        
+###   获取内页连带  /product/embeddedPagesJoint  [GET]
+
++ Request (application/json)
+
+        {
+            "smallEmbeddedPagesJointRate": 16.6,
+            "bigEmbeddedPagesJointRate": 20.1,
+            "productA": "目送",
+            "productB": "一句顶一万句",  
+            "typeA": "文学",
+            "typeB": "小说",
+            "shopIdList": [
+                12344432,
+                21342343,
+                21434322,
+                12343423
+            ],
+            "pageNum": 1
+        }
+
++ Response 200 (application/json)
+
+            {
+                "embeddedPagesJoint": [{
+                    "productAName": "目送",
+                    "buyerA": 199,
+                    "productBName": "一句顶一万句", 
+                    "buyerB": 221,
+                    "collocationCorrelation": "?不知道这个字段有没有必要",
+                    "embeddedPagesJointRate": 0.46%,
+                    "totalPage": 23
+                },
+                {}]
+            }
+
+###    获取访客价值 /product/visitorValue  [GET]
+
++ Request (application/json)
+
+        {
+            "smallTransferRate": 16.6,
+            "bigTransferRate": 20.1,
+            "productA": "目送",
+            "productB": "一句顶一万句",  
+            "typeA": "文学",
+            "typeB": "小说",
+            "shopIdList": [
+                23143,
+                32143,
+                21343,
+                23143
+            ],
+            "pageNum": 1
+        }
+
++ Response 200 (application/json)
+
+            {
+                "visitorValue": [{
+                    "productAName": "目送",
+                    "buyerA": 199,
+                    "productBName": "一句顶一万句", 
+                    "buyerB": 221,
+                    "comsumeAmount" :987.4,
+                    "collocationCorrelation": "?不知道这个字段有没有必要",
+                    "transferRate": 0.46%,
+                    "totalPage": 23
+                },
+                {}]
+            }
+
+###    获取回购周期  /product/backCycle [GET]
+
++ Request (application/json)
+
+        {
+            "smallBuyer": 111,
+            "bigBuyer": 202,
+            "smallBuyBackCycle": 2,
+            "bigBuyBackCycle": 4,
+            "smallNotBuyerToday": 011,
+            "bigNotBuyerToday": 18,
+            "smallNotBuyerWeek": 121,
+            "bigNotBuyerWeek": 211,
+            "product": "目送",
+            "type": "文学",
+            "shopIdList": [
+                21312,
+                12313,
+                231321,
+                123123
+            ],
+            "pageNum": 1
+        }
+
++ Response 200 (application/json)
+
+            {
+                "buyBackCycle": [{
+                    "productName": "目送",
+                    "buyer": 199,
+                    "buyerBack": 221,
+                    "buyBackRate" :0.49%,
+                    "aveBuyBackPerPerson": 1.02,
+                    "aveBuyBackCycle": 4,
+                    "notBuyerToday": 11,
+                    "notBuyerWeek": 222
+                    "totalPage": 23
+                },
+                {}]
+            }
+        
+##  销售分析 
+
+### 获取销售分析截止时间信息 /salaAnalysis/endTime
+
++ Request (application/json)
+
+        {
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "endTime":[
+                "2016-09-09",
+                "2016-08-09",
+                "2016-07-09"
+                ]
+        }
+
+###   销售分析指标树  /saleAnalysis/saleAnalysisTree [GET]
+ 1 成交金额 2 成交订单数 3 订单均价 4 首次购买订单数 5 回头购买订单数 6 关联销售订单占比 7 平均单件数
++ Request (application/json)
+
+        {
+            "type":1       //1 按周  2 按月 3 按天 4季度
+            "shopIdList": [
+                12345,
+                12354,
+                12334,
+                12341
+            ],
+            "endTime": "2016-09-02"
+        }
+
++ Response 200 (application/json)
+
+            {
+                "tree":[
+                    {
+                        "amount": 20,                     //成交额
+                        "orderNum": 20,                   //订单件数
+                        "aveAmount": 20,                  //订单均价
+                        "key": 1,                         
+                        "trend":[1,2,3,4,5],              //趋势
+                        "description": 说明,              //说明
+                        "compareLast": -12%,              //与上一个单位相比
+                        "label": 成交额                   //名称
+                        "jointOrderRate": 10%,            //关联订单的占比
+                        "aveOrderNum": 20,                //平均订单件数
+                    },
+                    {},{}
+                ]
+            }
+
+#### 获取类目中商品销售情况  /saleAnalysis/productsInfo
+
++ Request (application/json)
+
+            {
+                "type":1 ,     //1 按周  2 按月 3 按天
+                "shopIdList": [
+                    12345,
+                    12354,
+                    12334,
+                    12341
+                ],
+                "endTime": "2016-09-02",
+                "dimension": 1 // 1 apg 2 cat 3 product         //查看维度
+            }
+            
++ Response 200 (application/json)
+
+            {
+                "time": "2016-11-02",                           //本次时间
+                "lastTime": "2016-05-05"                        //上次时间
+                "productSet": [
+                    {
+                        "productName": "Love Story",            //商品名称
+                        "dealMoney": 3300,                      //成交金额
+                        "dealNum":33,                           //成交件数
+                        "avePrice": 100,                        //件均价
+                        "moneyRate": 10.00%,                    //环比成交额
+                        "numRate": 10.00%,                      //环比成交件数
+                        "priceRate": 10.00%                     //环比件单价
+                        "lastDealMoney": 22,                    //上一次成交额
+                        "lastDealNum": 23,                      //上一次成交件数
+                        "lastAvePrice": 23                      //上一次件单价
+                    },
+                    {},
+                    {}
+                ]
+            }
+
+#### 获取首次/回头购买分析情况  /saleAnalysis/purchasingAnalysis
+
++ Request (application/json)
+
+            {
+                "type":1 ,     //1 按周  2 按月 3 按天
+                "shopIdList": [
+                    12345,
+                    12354,
+                    12334,
+                    12341
+                ],
+                "endTime": "2016-09-02",
+            }
+            
++ Response 200 (application/json)
+
+            {
+                "purchasingAnalysis":[
+                    {
+                        "time": 2016-12-12,            //购买日期     
+                        "totalAmount": 40,             //合计成交金额
+                        "totalOrderNum": 45,           //合计订单件数
+                        "totalAveAmount": 56,          //合计订单均价
+                        "firstAmount": 40,             //首次购买成交金额
+                        "firstOrderNum": 45,           //首次购买订单数
+                        "firstAveAmount": 45,          //首次购买订单均价
+                        "backAmount": 56,              //回头购买成交金额
+                        "backOrderNum": 56,            //回头购买订单数
+                        "backAveAmount": 56            //回头购买订单均价
+                    },
+                    {},
+                    {}
+                ]
+            }
+
+#### 获取店铺促销分析情况  /saleAnalysis/promotionAnalysis
+
++ Request (application/json)
+
+            {
+                "type":1 ,     //1 一天 3 三天 7 七天 11 十一天 18 十八天 30 一个月 90 一个季 180 半年 360 一年
+                "shopIdList": [
+                    12345,
+                    12354,
+                    12334,
+                    12341
+                ],
+                "endTime": "2016-09-02"
+            }
+            
++ Response 200 (application/json)
+
+           {
+                "time": "2016-11-02",
+                "lastTime": "2016-05-05",
+                "promotionSet": [
+                    {
+                        "promotionType": 1, 
+                        "promotionName":"天猫优惠券"
+                        "promMoney": 3300,            //优惠金额
+                        "promNum":33,                 //优惠次数
+                        "promAvePrice": 100,          //平均优惠金额
+                        "moneyRate": 10.00%,          //环比优惠金额
+                        "numRate": 10.00%,            //环比优惠次数
+                        "avePriceRate": 10.00%        //环比平均优惠金额
+                        "lastPromMoney": 22,          //上一次优惠金额
+                        "lastPromNum": 23,            //上一次优惠次数
+                        "lastPromAvePrice": 23        //上一次平均优惠金额
+                    },
+                    {},
+                    {}
+                ]   
+            }     
+
+## 人群管理
+### 新建人群规则  /crowd/crowRule [POST]
+ + Request (application/json)
+ 
+        {
+           "createDate": "2016-12-12 00:00:00",
+           "ruleName": "人群规则创建于1",
+           "ruleType": 71,
+           "parameters": "{'rule1':1, 'rule2':2, 'rule3':3, 'cond1':'and', 'cond2':'or'}",
+           "userId": 1,
+           "userName": "张三",
+           "shopIdList": [1],
+           "supporter": "2"
+        }
+
+##  仪表盘 
+
+### 活动营销 
+
+####  新建活动  /activity/activity [POST]
+ 凭记忆写的 看下页面 
+ 
+ + Request (application/json)
+
+        {
+            "actiTitle": "大出血",
+            "actiType": "线下狂欢",
+            "actiStatus": "0",      //0 未开始 1 持续中 2 已结束
+            "actiStartTime": "2016-09-23 22:22:22",
+            "actiEndTime": "2016-09-23 22:22:23"
+            "actiStoreId": [
+                12324234,
+                123123423,
+                21323
+                ]
+        }
+
++ Response 200 (application/json)
+
+        {
+            
+        }
+
+####   编辑活动 /activity/activity [PUT]
+ 凭记忆写的 看下页面 
+ 
++ Request (application/json)
+
+        {
+            "actiId": 1231234,
+            "actiTitle": "大出血",
+            "actiType": "线下狂欢",
+            "actiStatus": "0",      //0 未开始 1 持续中 2 已结束 3 已删除
+            "actiStartTime": "2016-09-23 22:22:22",
+            "actiEndTime": "2016-09-23 22:22:23"
+            "actiStoreId": [
+                12324234,
+                123123423,
+                21323
+                ],
+            "actiRemark": "活动说明"
+        }
+        
++ Response 200 (application/json)
+
+        {
+        }      
+        
+####  删除活动/deleteCompaign [Delete]
+
++ Request (application/json)
+
+        {
+            "actiId": 1231234,
+            "actiTitle": "大出血",
+            "actiType": "线下狂欢",
+            "actiStatus": "3",      //0 未开始 1 持续中 2 已结束 3 已删除
+            "actiStartTime": "2016-09-23 22:22:22",
+            "actiEndTime": "2016-09-23 22:22:23"
+            "actiStoreId": [
+                12324234,
+                123123423,
+                21323
+                ],
+            "actiRemark": "活动说明"
+            }
+        
++ Response 200 (application/json)
+
+        {
+        }      
+        
+####  获取活动列表 /activity/activityList [GET]
+
++ Response 200 (application/json)
+
+        {
+            "activityList":[{"actiId": 1231234,
+            "actiTitle": "大出血",
+            "actiType": "线下狂欢",
+            "actiStatus": "3",      //0 未开始 1 持续中 2 已结束 3 已删除
+            "actiStartTime": "2016-09-23 22:22:22",
+            "actiEndTime": "2016-09-23 22:22:23"
+            "actiStoreId": [
+                12324234,
+                123123423,
+                21323
+                ],
+            "actiRemark": "活动说明"
+            },
+            {}
+            ]
+        }
+        
+###  效果总览  
+放什么东西待定 
+
+## 用户管理模块
+
+#### 登录   /user/user  [GET]
+
++ Request (application/json)
+
+       {
+            "myAccount": "18814122536",
+            "myPassword": "dfa1234dksalfj234io",
+            "login": true   //标识是否为登录动作，因为改接口也可以请求用户collection
+        }
+        
++ Response 200 (application/json) 
+        {
+            "user[]":[
+                "id": "1",
+                "isAllowedLogin": 1, // 1表示允许，0表示不允许
+                "loginName": "zhangsan",
+                "name": "张三",
+                "phone": "123456789000",
+                "email": "1111@11111.com",
+                "workNumber": "122",
+                "remark": "备注",
+                "auth[]": [],
+                "companyId[]": [],
+                "departmentId": [],
+                "roleId[]": []
+            ]       //虽然是数组，但是总是返回此次登录的用户
+        }
+        
+
+#### 新建   /user/user  [POST]
+
++ Request (application/json)
+
+       {
+            
+        }
+        
++ Response 200 (application/json)
+
+        {
+        }    
+        
+#### 个人信息修改   /user/user  [PUT]    
+
++ Request (application/json)
+
+       {
+            "oldPassword": "123124sdf23",
+            "newPassword": "dfa1234dksalfj234io",
+            "phone": "18814122536",
+            "email": "2134214123@qq.com"
+        }
+        
++ Response 200 (application/json)
+
+        {
+        }    
+
+#### 个人信息明细   /user/userDetail  [GET]    
+
++ Request (application/json)
+
+       {
+            "id": 123424
+        }
+        
++ Response 200 (application/json)
+
+        {
+        }    
+        
+
+## 后台模块
+
+### 店铺管理
+
+#### 获取所有店铺信息 /shop/shop [GET]
+        
++ Response 200 (application/json)
+   
+   
+        {
+        "shop": [{
+            "name": "",
+            "type": "",
+            "contactPerson": "",
+            "contactNumber": "",
+            "state": "",
+            "analysts": "",
+            "location": "",
+            "createTimestamp": ""
+            },{
+            }
+        ]}
+    }
+
+#### 创建店铺信息   /shop/shop[/id]  [POST]    
+
++ Request (application/json)
+
+       {
+            "name": "",
+            "type": "",
+            "contactPerson": "",
+            "contactNumber": "",
+            "state": "",
+            "analysts": "",
+            "location": "",
+            "createTimestamp": ""
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+
+#### 更新店铺信息   /shop/shop[/id]  [PUT]    
+
++ Request (application/json)
+
+       {
+            "id": 1234
+            "name": "书店",
+            "type": 0,
+            "contactPerson": "李四",
+            "contactNumber": "123546789",
+            "state": "1",
+            "analysts": "1243213435","123"
+            "location": "",
+            "createTimestamp": 12354562542
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        
+## 活动管理模块
+
+### 下载文件 /activity/activityCommon [GET]
+
++ Request (application/json)
+
+    {
+        "file":"fileUrl"                //文件路径
+    }
+
+### 活动计划管理
+
+#### 查询活动计划   /activity/activityPlan [GET]
+
++ Request (application/json)
+
+        {
+            <!--"userName":"管理员",                    //用于判断权限-->
+            "companyId": 1,                        //只能看到本公司的活动
+            "name":"促销活动",                      //活动名称
+            "beginSubmitTime":"2016-12-22 ", //开始申请时间          
+            "endSubmitTime":"2016-12-22 12:00:00",  //结束审核时间
+            "submitter":"潘帅",                     //申请人
+            "auditState":0                          //审核状态（0审核中，1审核通过，2审核拒绝/未通过）
+        }
+ 
+ 
++ Response 200 (application/json)
+
+        {
+            "auditorsToselect":[
+            {
+                "id":"121",
+                "name":"hhhhh"
+            },
+            {}
+            ],
+            "activities":[
+                {
+                    "id":1,
+                    "name":"促销活动",                      //活动名称
+                    "companyName":"xx公司",
+                    "shopIdList": [
+                        12345,
+                        12354,
+                        12334,
+                        12341
+                    ],
+                    "activityNo":"H10003",                  //活动编号
+                    "submitter":"潘帅",                     //提交人
+                    "submitTime":"2016-12-31 09:00:00",     //提交时间
+                    "applicant":"潘帅",                     //申请人
+                    "leader":"潘帅",                        //负责人
+                    "beginDate":"2016-12-24",               //活动开始时间
+                    "endDate":"2016-12-25",                 //活动结束时间
+                    "objective":"促销",                     //活动目的
+                    "haveGift":true,                        //是否有赠品，true有，false没
+                    "exceptKpi":"KPI",                      //预期KPI
+                    "file":"",                              //活动文档file
+                    "auditState":0,                         //审核状态（0审核中，1审核通过，2审核拒绝/未通过）
+                    "auditorId":"1",                 //审核人
+                    "auditorName":"潘总监",                 //审核人
+                    "auditTime":"2016-12-22 12:00:00",      //审核时间
+                    "auditRemark":"不错",                   //审核人意见/备注
+                    "role":0                                //0可查看，1可查看、修改、删除、审批，2可修改、查看
+                },
+                {},
+                {}
+            ]
+        }
+
+#### 创建活动计划   /activity/activityPlan [POST] 
+
++ Request (application/json)
+
+        {
+            "name":"促销活动",                      //活动名称
+            "companyId": 1,
+            "companyName":"xx公司",
+            "shopIdList": [
+                12345,
+                12354,
+                12334,
+                12341
+            ],
+            <!--"submitter":"潘帅",                     //提交人-->
+            "submitTime":"2016-12-31 09:00:00",     //提交时间
+            "applicant":"潘帅",                     //申请人
+            "leader":"潘帅",                        //负责人
+            "beginDate":"2016-12-24",               //活动开始时间
+            "endDate":"2016-12-25",                 //活动结束时间
+            "objective":"促销",                     //活动目的
+            "haveGift":true,                        //是否有赠品，true有，false没
+            "exceptKpi":"KPI",                      //预期KPI
+            "file":"",                              //活动文档file
+            "auditorId":"1",                 //审核人
+            "auditorName":"潘总监"                 //审核人
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "增加活动计划出错"
+        }
+
+#### 修改活动计划   /activity/activityPlan[/id] [PUT]
+
++ Request (application/json)
+
+        {
+            <!--"userName":"潘帅",                      //用户名（后台需要验证该用户是否有修改权限）-->
+            "name":"促销活动",                      //活动名称
+            "companyId": 1,
+            "companyName":"xx公司",
+            "shopIdList": [
+                12345,
+                12354,
+                12334,
+                12341
+            ],
+            "applicant":"潘帅",                     //申请人
+            "leader":"潘帅",                        //负责人
+            "beginDate":"2016-12-24",               //活动开始时间
+            "endDate":"2016-12-25",                 //活动结束时间
+            "objective":"促销",                     //活动目的
+            "haveGift":true,                        //是否有赠品，true有，false没
+            "exceptKpi":"KPI",                      //预期KPI
+            "file":"",                              //活动文档file
+            "auditorId":"1",                 //审核人
+            "auditorName":"潘总监"                 //审核人
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "修改活动计划出错"
+        }
+        
+#### 删除活动计划   /activity/activityPlan[/id] [DELETE]
+
++ Request (application/json)
+
+        {
+            <!--"userName":"管理员"                    //（后台需要验证该用户是否有删除权限）-->
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "删除活动计划出错"
+        }       
+      
+#### 审批活动计划   /activity/activityPlan/audit[/id] [PUT]
+
++ Request (application/json)
+
+        {
+            <!--"userName":"潘帅",                    //用户名（后台需要验证该用户是否有修改权限）-->
+            "auditTime":"2016-12-22 12:00:00",    //审核时间
+            "auditState":0,                       //审核状态（0审核中，1审核通过，2审核拒绝/未通过）
+            "auditRemark":"不错"                  //审核人意见/备注
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "审核活动计划出错"
+        } 
+        
+### 活动图片管理
+
+#### 查询活动图片   /activity/activityPicture [GET]
+
++ Request (application/json)
+
+        {
+            "activityId":1,                         //活动计划id
+            <!--"userName":"管理员",                    //用于判断权限-->
+            <!--"companyId": 1,                        //只能看到本公司的活动-->
+            <!--"name":"促销活动",                      //活动名称-->
+            <!--"beginSubmitTime":"2016-12-22 12:00:00", //开始申请时间          -->
+            <!--"endSubmitTime":"2016-12-22 12:00:00",  //结束审核时间-->
+            <!--"submitter":"潘帅",                     //申请人-->
+            <!--"auditState":0                          //审核状态（0审核中，1审核通过，2审核拒绝/未通过）-->
+        }
+        
++ Response 200 (application/json)
+
+        {
+            "auditorsToselect":[
+            {
+                "id":"121",
+                "name":"hhhhh"
+            },
+            {}
+            ],
+            "activitiyPictures":[
+                {
+                    "id":1,
+                    "name":"促销活动",                      //活动名称
+                    "picture":"",                           //活动图片
+                    "submitter":"潘帅",                     //提交人
+                    "submitTime":"2016-12-31 09:00:00",     //提交时间
+                    "auditState":0,                         //审核状态（0审核中，1审核通过，2审核拒绝/未通过）
+                    "auditorId":"1",                 //审核人
+                    "auditorName":"潘总监",                 //审核人
+                    "auditTime":"2016-12-22 12:00:00",      //审核时间
+                    "auditRemark":"不错",                   //审核人意见/备注
+                    "role":0                                //0可查看，1可查看、修改、删除、审批，2可修改、查看
+                },
+                {},
+                {}
+            ]
+        }
+
+
+#### 创建活动图片   /activity/activityPicture [POST] 
+
++ Request (application/json)
+
+        {
+            "activityId":1,
+            "companyId":1,
+            "name":"促销活动",                      //活动名称
+            "picture":"",                           //活动图片
+            <!--"submitter":"潘帅",                     //提交人-->
+            "submitTime":"2016-12-31 09:00:00",     //提交时间
+            "auditorId":"1",                 //审核人
+            "auditorName":"潘总监"                //审核人
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "增加活动图片出错"
+        }
+
+#### 修改活动图片   /activity/activityPicture[/id] [PUT]
+
++ Request (application/json)
+
+        {
+            "activityId":1,
+            "companyId":1,
+            <!--"userName":"潘帅",                      //用户名（后台需要验证该用户是否有修改权限）-->
+            "name":"促销活动",                      //活动名称
+            "picture":"",                           //活动图片
+            "auditorId":"1",                 //审核人
+            "auditorName":"潘总监"                //审核人
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "修改活动图片出错"
+        }
+        
+#### 删除活动图片   /activity/activityPicture[/id] [DELETE]
+
++ Request (application/json)
+
+        {
+            <!--"userName":"管理员"                    //（后台需要验证该用户是否有删除权限）-->
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "删除活动图片出错"
+        }       
+      
+#### 审批活动图片   /activity/activityPicture/audit[/id] [PUT]
+
++ Request (application/json)
+
+        {
+            <!--"userName":"潘帅",                    //用户名（后台需要验证该用户是否有修改权限）-->
+            "auditTime":"2016-12-22 12:00:00",    //审核时间
+            "auditState":0,                       //审核状态（0审核中，1审核通过，2审核拒绝/未通过）
+            "auditRemark":"不错"                  //审核人意见/备注
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "审核活动图片出错"
+        }        
+      
+### 活动页面管理
+
+#### 查询活动页面   /activity/activityPage  [GET]
+
++ Request (application/json)
+
+        {
+            "activityId":1,                         //活动计划id
+            <!--"userName":"管理员",                    //用于判断权限-->
+            <!--"companyId": 1,                        //只能看到本公司的活动-->
+            <!--"name":"促销活动",                      //活动名称-->
+            <!--"beginSubmitTime":"2016-12-22 12:00:00", //开始申请时间          -->
+            <!--"endSubmitTime":"2016-12-22 12:00:00",  //结束审核时间-->
+            <!--"submitter":"潘帅",                     //申请人-->
+            <!--"auditState":0                          //审核状态（0审核中，1审核通过，2审核拒绝/未通过）-->
+        }
+
+  
++ Response 200 (application/json)
+
+        {
+            "auditorsToselect":[
+            {
+                "id":"121",
+                "name":"hhhhh"
+            },
+            {}
+            ],
+            "activityPages":[
+                {
+                    "id":1,
+                    "name":"促销活动",                      //活动名称
+                    "pageLink":"",                          //页面地址
+                    "description":"促销",                   //文字描述
+                    "file":"",                              //活动文档file
+                    "submitter":"潘帅",                     //提交人
+                    "submitTime":"2016-12-31 09:00:00",     //提交时间
+                    "auditState":0,                         //审核状态（0审核中，1审核通过，2审核拒绝/未通过）
+                    "auditorId":"1",                 //审核人
+                    "auditorName":"潘总监",                 //审核人
+                    "auditTime":"2016-12-22 12:00:00",      //审核时间
+                    "auditRemark":"不错",                   //审核人意见/备注
+                    "role":0                                //0可查看，1可查看、修改、删除、审批，2可修改、查看
+                },
+                {},
+                {}
+            ]
+        }
+
+
+#### 创建活动页面   /activity/activityPage [POST] 
+
++ Request (application/json)
+
+        {
+            "activityId":1,
+            "companyId":1,
+            "name":"促销活动",                      //活动名称
+            "pageLink":"",                          //页面地址
+            "description":"促销",                   //文字描述
+            "file":"",                              //活动文档file
+            <!--"submitter":"潘帅",                     //提交人-->
+            "submitTime":"2016-12-31 09:00:00",     //提交时间
+            "auditorId":"1",                 //审核人
+            "auditorName":"潘总监"                 //审核人
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "增加活动页面出错"
+        }
+
+#### 修改活动页面   /activity/activityPage[/id] [PUT]
+
++ Request (application/json)
+
+        {
+            <!--"userName":"潘帅",                      //用户名（后台需要验证该用户是否有修改权限）-->
+            "activityId":1,
+            "companyId":1,
+            "name":"促销活动",                      //活动名称
+            "pageLink":"",                          //页面地址
+            "description":"促销",                   //文字描述
+            "file":"",                              //活动文档file
+            "auditorId":"1",                 //审核人
+            "auditorName":"潘总监"                 //审核人
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "修改活动页面出错"
+        }
+        
+#### 删除活动页面   /activity/activityPage[/id] [DELETE]
+
++ Request (application/json)
+
+        {
+           <!--"userName":"管理员"                    //（后台需要验证该用户是否有删除权限）-->
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "删除活动页面出错"
+        }       
+      
+#### 审批活动页面   /activity/activityPage/audit[/id] [PUT]
+
++ Request (application/json)
+
+        {
+            <!--"userName":"潘帅",                    //用户名（后台需要验证该用户是否有修改权限）-->
+            "auditTime":"2016-12-22 12:00:00",    //审核时间
+            "auditState":0,                       //审核状态（0审核中，1审核通过，2审核拒绝/未通过）
+            "auditRemark":"不错"                  //审核人意见/备注
+        }
+        
++ Response 200 (application/json)
+
+        {
+        } 
+        {
+            "isOk": false,
+            "code": 400,
+            "message": "审核活动页面出错"
+        }
