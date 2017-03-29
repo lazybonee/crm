@@ -797,7 +797,35 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
             }     
 
 ## 人群管理
-### 新建人群规则  /crowd/crowRule [POST]
+### 人群规则管理
+#### 获取规则 /crowd/crowdRule [get]
++ Request (application/json)
+
+        {
+            "name":"人群"
+        }
+        
++ Response 200 (application/json)
+
+        {
+          "crowdRules": [
+          {"id": 2677, 
+          "createDate": "2017-03-29 14:49:02", 
+          "ruleName": "人群创建于20170329144902",
+          "parameters":"{}",
+          "ruleType":71,
+          "supporter":"非系统"
+          },
+          {"id": 2678, 
+          "createDate": "2017-03-30 14:49:02", 
+          "ruleName": "人群创建于20170330144902",
+          "parameters":"{}",
+          "ruleType":71,
+          "supporter":"非系统"
+          }
+          ]
+        }
+#### 新建人群规则  /crowd/crowRule [POST]
  + Request (application/json)
  
         {
@@ -810,6 +838,103 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
            "shopIdList": [1],
            "supporter": "2"
         }
++ Response 200 (application/json)
+        {
+        
+        }
+
+#### 删除人群规则  /crowd/crowRule/id [DELETE]
++ Request (application/json)
+ 
+        {
+           "id":2877,
+           "createDate": "2016-12-12 00:00:00",
+           "ruleName": "人群规则创建于1",
+           "ruleType": 71,
+           "parameters": "{'rule1':1, 'rule2':2, 'rule3':3, 'cond1':'and', 'cond2':'or'}",
+           "userId": 1,
+           "userName": "张三",
+           "shopIdList": [1],
+           "supporter": "2"
+        }
++ Response 200 (application/json)
+        {
+        
+        }
+        
+#### 修改人群规则  /crowd/crowRule/id [PUT]
+
++ Request (application/json)
+ 
+        {
+           "id":2877,
+           "createDate": "2016-12-12 00:00:00",
+           "ruleName": "人群规则创建于1",
+           "ruleType": 71,
+           "parameters": "{'rule1':1, 'rule2':2, 'rule3':3, 'cond1':'and', 'cond2':'or'}",
+           "userId": 1,
+           "userName": "张三",
+           "shopIdList": [1],
+           "supporter": "2"
+        }
++ Response (application/json)
+        {
+        
+        }
+#### 导出人群规则  /crowd/exportMethod [get]
+
++ Request (application/json)
+
+        {
+            "id":122
+        }
+ + Response 200 (application/json)
+        {
+        
+        }   
+### 人群导出管理
+#### 获取规则列表  /download/exportRule [get]
++ Request (application/json)
+
+        {
+            
+        }
+ + Response 200 (application/json)
+ 
+        {
+            "exportRules": [
+          {
+            "executeState":1,
+            "id":32,
+            "shopName":"銅鑼灣圖書中心 CWB Book Centre",
+            "outputName":"test2",
+            "operator":"管理员",
+            "lastUpdateDate":"2017-03-10",
+            "expireTime":""
+            
+          }
+          ]
+        }  
+        
+#### 下载报表url为download/downloadCrowd 
+
+####删除导出规则     /download/exportRule/id  [DELETE] 
+
++ Request (application/json)
+
+        {
+           "executeState":1,
+            "id":32,
+            "shopName":"銅鑼灣圖書中心 CWB Book Centre",
+            "outputName":"test2",
+            "operator":"管理员",
+            "lastUpdateDate":"2017-03-10",
+            "expireTime":"" 
+        }
+ + Response 200 (application/json)
+        {
+           
+        } 
 
 ##  仪表盘 
 
