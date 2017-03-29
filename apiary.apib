@@ -796,9 +796,12 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
                 ]   
             }     
 
-## 人群管理
+##  人群管理
+
 ### 人群规则管理
-#### 获取规则 /crowd/crowdRule [get]
+
+#### 获取人群规则 /crowd/crowdRule [get]
+
 + Request (application/json)
 
         {
@@ -825,6 +828,19 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
           }
           ]
         }
+
+#### 获取所有类目  /crowd/getCategory [get]
++Request (application/json)
+    {
+        
+    }
+ +Response 200 (application/json)
+    {
+        "categories": [
+            {value: "A01", label: "A01-辭書及工具書"},
+            {value: "A02", label: "A02-語言文字"}
+            ]
+    }
 #### 新建人群规则  /crowd/crowRule [POST]
  + Request (application/json)
  
