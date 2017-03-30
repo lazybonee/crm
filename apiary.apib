@@ -896,7 +896,7 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
            "createDate": "2016-12-12 00:00:00",
            "ruleName": "人群规则创建于1",
            "ruleType": 72,
-           "parameters": "{见下文}",
+           "parameters": "见下文",
            "userId": 1,
            "userName": "张三",
            "shopIdList": [1],
@@ -1006,11 +1006,33 @@ SVM
             "outputName":"test2",
             "operator":"管理员",
             "lastUpdateDate":"2017-03-10",
-            "expireTime":""
+            "expireTime":"",
+            "ext":"见下文"
             
           }
           ]
         }  
+        
+ext 字段包含了规则参数,模型参数,模型结果等信息
+逻辑回归模型ext如下, SVM没有weight信息,其他都有.
+ + Response 200 (application/json)
+ 
+        {
+            "ext":{
+                parameters:规则的parameters都放进来,
+                auc: 0.987,
+                roc: [
+                    {x:0, y: 0},
+                    {x:0.1, y: 0.23}...
+                    {x:1, y: 1}
+                ],
+                weight:[
+                    {x:"近180天支付笔数", y: 1.123},
+                    {x:"近360天支付笔数", y: -0.193}...
+                ]
+            }
+        }  
+        
         
 #### 下载报表url为download/downloadCrowd 
 
@@ -1025,7 +1047,7 @@ SVM
             "outputName":"test2",
             "operator":"管理员",
             "lastUpdateDate":"2017-03-10",
-            "expireTime":"" 
+            "expireTime":""
         }
  + Response 200 (application/json)
         {
