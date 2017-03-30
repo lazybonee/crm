@@ -796,7 +796,7 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
                 ]   
             }     
 
-##  人群管理
+## 人群管理
 
 ### 人群规则管理
 
@@ -805,7 +805,7 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
 + Request (application/json)
 
         {
-            "name":"人群"
+            "name":"人群规则名称"
         }
         
 + Response 200 (application/json)
@@ -854,11 +854,91 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
            "shopIdList": [1],
            "supporter": "2"
         }
+        
 + Response 200 (application/json)
         {
         
         }
+        
+##### ruleType70 类目偏好人群
+ + Request (application/json)
+ 
+        {
+           "createDate": "2016-12-12 00:00:00",
+           "ruleName": "人群规则创建于1",
+           "ruleType": 70,
+           "parameters": "{'categories': '25,21', 'recency': '1|2|3|4|5|6'}",
+           "userId": 1,
+           "userName": "张三",
+           "shopIdList": [1],
+           "supporter": "2"
+        }
+        
+##### ruleType71 规则运算人群
 
+ + Request (application/json)
+ 
+        {
+           "createDate": "2016-12-12 00:00:00",
+           "ruleName": "人群规则创建于1",
+           "ruleType": 71,
+           "parameters": "{'rule1':1, 'rule2':2, 'rule3':3, 'cond1':'and', 'cond2':'or'}",
+           "userId": 1,
+           "userName": "张三",
+           "shopIdList": [1],
+           "supporter": "2"
+        }  
+        
+##### ruleType72 模型运算人群
+ + Request (application/json)
+ 
+        {
+           "createDate": "2016-12-12 00:00:00",
+           "ruleName": "人群规则创建于1",
+           "ruleType": 72,
+           "parameters": "{见下文}",
+           "userId": 1,
+           "userName": "张三",
+           "shopIdList": [1],
+           "supporter": "2"
+        }         
+        
+逻辑回归
+    
++ Request (application/json)
+
+        {
+            "parameters":{
+                modelType:true,
+                crowdSize:1000,
+                rule:1,
+                testFactor:1,
+                trainFactor:4,
+                LRMaxIterate:100,
+                LRRegularType:1|2
+            }
+        }
+        
+SVM
+    
++ Request (application/json)
+
+        {
+            "parameters":{
+                modelType:false,
+                crowdSize:1000,
+                rule:1,
+                testFactor:1,
+                trainFactor:4,
+                SVMConvergeFactor:0.001,
+                SVMPunishFactor:1,
+                SVMPunishNeFactor:1
+                SVMPunishPoFactor:1
+            }
+        }    
+        
+        
+        
 #### 删除人群规则  /crowd/crowRule/id [DELETE]
 + Request (application/json)
  
