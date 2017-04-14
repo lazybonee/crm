@@ -166,7 +166,6 @@ request接口都必须带上如下参数： request接口以/data开头
                 214123,
                 123412
             ],
-           "targetSelected": 'F'                    //是否进行m分析
         }
 
 + Response 200 (application/json)  结合页面商榷返回格式 
@@ -177,14 +176,14 @@ request接口都必须带上如下参数： request接口以/data开头
                     "customNum": 222,                        //参与分析客户数量
                     "customRate": 1.09%,                     //参与分析客户占比
                     "accuCustomRate": 7.01%,                 //参与分析客户累计占比
-                    "r1": 11.1%,                             //r分析的值;若无r分析，则此处为空
-                    "r2": 22.2%,                             //r分析的值;若无r分析，则此处为空
-                    "r3": 11.1%,                             //r分析的值;若无r分析，则此处为空
-                    "r4": 22.2%,                             //r分析的值;若无r分析，则此处为空
-                    "r5tobig": 33.4%,                        //r分析的值;若无r分析，则此处为空
-                    "pricePerCustom":"",
-                    "boughtTimes":"",
-                    "accumulateMoney":""                  //m分析的值;若无m分析，则此处为空
+                    "r1": 11.1%,                             
+                    "r2": 22.2%,                             
+                    "r3": 11.1%,                             
+                    "r4": 22.2%,                             
+                    "r5tobig": 33.4%,                        
+                    "pricePerCustom":"280.343",
+                    "boughtTimes":"2.0",
+                    "accumulateMoney":"132.4"                  
                 },{
                 }
                              ]
@@ -204,7 +203,6 @@ request接口都必须带上如下参数： request接口以/data开头
                 2132343
             ],
             "mValue": 10,
-            "targetSelected": 'F'   
         }
 
 + Response 200 (application/json)  结合页面商榷返回格式 
@@ -213,18 +211,18 @@ request接口都必须带上如下参数： request接口以/data开头
                 "mAnalysisList": [{
                     "duringMoney": "20元以下 ",
                     "customNum": 222,
-                    "customRate": 1.09%,
-                    "accuCustomRate": 7.01%,
-                    "f1": 11.1%,
-                    "f2": 22.2%,
-                    "f3": 11.1%,
-                    "f4": 22.2%,
-                    "f5tobig": 33.4%,
-                    "r1": 11.1%,
-                    "r2": 22.2%,
-                    "r3": 11.1%,
-                    "r4": 22.2%,
-                    "r5tobig": 33.4%,
+                    "customRate": "1.09%",
+                    "accuCustomRate": "7.01%",
+                    "f1": "11.1%",
+                    "f2": "22.2%",
+                    "f3": "11.1%",
+                    "f4": "22.2%",
+                    "f5tobig": "33.4%",
+                    "r1": "11.1%",
+                    "r2": "22.2%",
+                    "r3": "11.1%",
+                    "r4": "22.2%",
+                    "r5tobig": "33.4%",
                 },{
                 }
                              ]
@@ -244,21 +242,68 @@ request接口都必须带上如下参数： request接口以/data开头
                 2132433,
                 1243433
             ],
-            "customRate": true,             //分析条件，客户数/占比
-            "averageAmount": false,         //分析条件，平均每次购买金额
-            "totalAmount":  false           //累计购买此金额
+            "targetSelected":"customRate"    //可取值：customRate,averageAccount,totalAmount
             
         }
 
 + Response 200 (application/json)
 
             {
-                "rfmModel": [[1,1,1,2],    //返回二维数组，每个元素分别表示不同f和r值情况下的分析结果
-                             [2,3,3,3],
-                             [3,3,3,4]
+                "rfmModel": [[1,1,1,2,3,4],    //返回二维数组，每个元素分别表示不同f和r值情况下的分析结果
+                             [2,3,3,3,4,5],
+                             [3,3,3,4,4,2],
+                             [3,3,3,4,4,2],
+                             [3,3,3,4,4,2],
+                             [3,3,3,4,4,2]
                              ],
-                "peopleNumber": 1000       //参与分析的总人数
+                "total": 1000       //总数
             }
+            
+####  回购周期分析接口 /rfm/cycleAnalysis  [GET]
+
++ Request (application/json)
+
+        {
+            "endTime": "2016-06-19",
+            "durTime": 365, 
+            "shopIdList": [
+                2134324,
+                2134324,
+                2132433,
+                1243433
+            ],
+            "cycleValue":10,
+            "cycleType":firstCycle
+
+        }
+
++ Response 200 (application/json)
+
+    {
+        "isOk": true,
+        "code": 200,
+        "message": "处理成功",
+        "cycleAnalysisList": [
+            {
+                "duringTime": "0-9天",
+                "customNum": 2121,
+                "customRate": "52.92%",
+                "accuCustomRate": "52.92%",
+                "r1": "48.56%",
+                "r2": "51.44%",
+                "r3": "0.00%",
+                "r4": "0.00%",
+                "r5tobig": "0.00%",
+                "f2": "45.78%",
+                "f3": "21.97%",
+                "f4": "11.36%",
+                "f5tobig": "20.89%",
+                "pricePerCustom": "225.79",
+                "boughtTimes": "3.75",
+                "accumulateMoney": "846.52"
+            }
+        ]
+    }
             
 ###  客户结构分析   /rfm/custStruct
 
