@@ -849,7 +849,7 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
 + Request (application/json)
 
         {
-            "name":"人群规则名称"
+            "ruleName":"人群规则名称"
         }
         
 + Response 200 (application/json)
@@ -861,30 +861,39 @@ memberLevel 1-3 为会员等级，memberLevel 0 为总计
           "ruleName": "人群创建于20170329144902",
           "parameters":"{}",
           "ruleType":71,
-          "supporter":"非系统"
+          "shopId":1,
+          "supporter":"非系统",
+          "userName":"火数"
           },
           {"id": 2678, 
           "createDate": "2017-03-30 14:49:02", 
           "ruleName": "人群创建于20170330144902",
           "parameters":"{}",
           "ruleType":71,
-          "supporter":"非系统"
+          "shopId":1,
+          "supporter":"非系统",
+          "userName":"火数"
           }
           ]
         }
 
 #### 获取所有类目  /crowd/getCategory [get]
 +Request (application/json)
-    {
-        
-    }
+        {
+            
+        }
  +Response 200 (application/json)
-    {
-        "categories": [
-            {value: "A01", label: "A01-辭書及工具書"},
-            {value: "A02", label: "A02-語言文字"}
+        {
+        "categories": 
+            [
+            {"value": "A01", 
+            "label": "A01-辭書及工具書"
+            },
+            {"value": "A02", 
+            "label": "A02-語言文字"
+            }
             ]
-    }
+        }
 #### 新建人群规则  /crowd/crowRule [POST]
  + Request (application/json)
  
@@ -991,8 +1000,8 @@ SVM
 + Request (application/json)
  
         {
-           "id":2877,
-           "createDate": "2016-12-12 00:00:00",
+            "id":2877,
+            "createDate": "2016-12-12 00:00:00",
            "ruleName": "人群规则创建于1",
            "ruleType": 71,
            "parameters": "{'rule1':1, 'rule2':2, 'rule3':3, 'cond1':'and', 'cond2':'or'}",
@@ -1046,7 +1055,7 @@ SVM
  + Response 200 (application/json)
  
         {
-            "exportRules": [
+        "exportRules": [
           {
             "executeState":1,
             "id":32,
@@ -1054,13 +1063,15 @@ SVM
             "outputName":"test2",
             "operator":"管理员",
             "lastUpdateDate":"2017-03-10",
-            "expireTime":"",
+            "expireTime":"2017-04-17",
+            "updateFrequency":0,  #0不更新，1每天更新
+            "crowdRuleId":12,  #产生人群对应的规则id
             "reason": "出错显示原因,否则为空",
             "ext":"见下文"
             
           }
-          ]
-        }  
+        ]
+        }
         
 ext 字段包含了规则参数,模型参数,模型结果等信息
 逻辑回归模型ext如下:
